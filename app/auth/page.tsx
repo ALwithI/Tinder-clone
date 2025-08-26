@@ -1,4 +1,5 @@
 "use client";
+import { createClient } from "@/lib/supabase/client";
 import { useState } from "react";
 
 export default function AuthPage() {
@@ -7,6 +8,36 @@ export default function AuthPage() {
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+  const supabase = createClient();
+
+  async function handleAuth(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      if (isSignUp) {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+        if (error) throw error;
+        if (data.user && !data.session) {
+          setError("Check your email for the confirmation link");
+          return;
+        }
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) throw error;
+      }
+    } catch (error: any) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-100 to-red-100 dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-md w-full space-y-8 p-8">
@@ -18,7 +49,7 @@ export default function AuthPage() {
             {isSignUp ? "Create your account" : "Sign in to your account"}
           </p>
         </div>
-        <form action="" className="space-y-6">
+        <form action="" className="space-y-6" onSubmit={handleAuth}>
           <div>
             <label
               htmlFor="email"
