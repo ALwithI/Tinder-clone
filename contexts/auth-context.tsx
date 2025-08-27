@@ -19,7 +19,12 @@ useEffect(() =>{
     async function checkUser{
         try{
             const{data:{session}}=await supabase.auth.getSession();
-            setUser(session?.user ?? null)
+            setUser(session?.user ?? null);
+            const{data:{subscription}}=supabase.auth.onAuthStateChange(async(event,session)=>{
+                setUser(session?.user ?? null);
+                
+            });
+            return() =>subscription.unsubscribe();
         }catch(error){
             console.error
         }finally{
