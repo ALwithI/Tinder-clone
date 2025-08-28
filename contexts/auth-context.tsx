@@ -41,7 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     }
     checkUser();
-  });
+  }, []);
   async function signOut() {
     setLoading(true);
     try {
