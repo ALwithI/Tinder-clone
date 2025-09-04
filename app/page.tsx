@@ -1,4 +1,6 @@
 import Image from "next/image";
+import { useAuth } from "@/contexts/auth-context";
+import Link from "next/link";
 
 export default function Home() {
   return (
